@@ -1,3 +1,4 @@
+import express from 'express';
 import {reduce, forEach, isEmpty, split, toLower, upperFirst} from 'lodash';
 import routes from './routes';
 import fileUtils from 'Utils/file';
@@ -18,7 +19,7 @@ export default async (app) => {
     );
   };
 
-  const setUpRouter = (controllerMethods) => {
+  const setUpRouter = (router, controllerMethods) => {
     forEach(routes, (value, key) => {
       if (isEmpty(key)) {
         return false;
@@ -29,7 +30,7 @@ export default async (app) => {
           forEach(controllerMethods, (controller, controllerName) => {
             forEach(controller, (action, actionName) => {
               let path = actionName === 'index' ? `/${controllerName}/:id?` : `/${controllerName}/${actionName}/:id?`;
-              app.all(`${path}`, controllerMethods[controllerName][actionName]);
+              router.all(`${path}`, controllerMethods[controllerName][actionName]);
             });
           });
         }
@@ -59,7 +60,7 @@ export default async (app) => {
         return false;
       }
 
-      app[method](`${path}`, controllerMethods[value.controller][value.action]);
+      router[method](`${path}`, controllerMethods[value.controller][value.action]);
       delete controllerMethods[value.controller][value.action];
       if (Object.keys(controllerMethods[value.controller]).length === 0) {
         delete controllerMethods[value.controller];
@@ -74,7 +75,9 @@ export default async (app) => {
   };
 
   let controllerMethods = await getMethodsInFolder(CONTROLLER_PATH);
-  setUpRouter(controllerMethods);
+  let router = express.Router();
+  setUpRouter(router, controllerMethods);
+  app.use('/api', router);
 
   let serviceFiles = await fileUtils.getFiles(SERVICE_PATH);
   setUpGlobalService(serviceFiles);
