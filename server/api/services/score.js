@@ -45,7 +45,6 @@ export const submitEntry = (entry) => {
   let {word} = entry;
 
   word = word.replace(/\s/g, '');
-  console.log({word});
 
   if(isPalindrome(word)) {
     points = word.length;
