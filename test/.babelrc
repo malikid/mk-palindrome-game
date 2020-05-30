@@ -1,0 +1,16 @@
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": [
+    ["module-resolver", {
+      "root": ["./server"],
+      "alias": {
+        "Api": "./server/api",
+        "Controllers": "./server/api/controllers",
+        "Services": "./server/api/services",
+        "Config": "./server/config",
+        "Utils": "./server/utils",
+        "TestUtils": "./test/utils"
+      }
+    }]
+  ]
+}
